@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--
+  釜山三天兩夜行程：手機版網頁（單一檔案，用瀏覽器直接打開就能看）
+
+  修改指南
+  1. 四個頁籤對應四個區塊：<section class="panel" id="before">（出發前）、id="day1"、id="day2"、id="day3"。
+  2. 每個行程是一個 <li class="stop">：
+       時間      <div class="time"><span>07:45</span></div>
+       標題      <h3>…</h3>
+       店名      <p class="shop">…<span>店名</span></p>      （不需要就整行刪掉）
+       說明      <p class="desc">…</p>
+       備註框    <p class="note"><b>備註</b>文字</p>          （不需要就整行刪掉）
+       小標籤    <span class="tag">想去再去</span>；紅色印章用 <span class="tag stamp">已訂票</span>
+     只有移動的那種小列是 <li class="stop move">，文字在 <div class="go">。
+  3. 右邊圖示的連結：<a class="ico" href="網址" …>，圖示下面的字在 <span>看介紹</span>。
+     不要連結時，把 <a class="ico" …>…</a> 換成 <span class="ico">…</span>，並刪掉裡面的 <span>看介紹</span>。
+  4. 換圖示：改 <use href="#i-名稱"/> 的名稱；底色改 style="--b:var(--s-顏色)"，顏色有 pink、yellow、mint、sky、lav。
+     可用的圖示名稱：plane、taxi、spa、soup、bed、bag、grill、pork、cart、chicken、cable、walk、fish、mochi、bread、saltbread、bridge、tower、beauty、rib、capsule、luggage、porridge、tteok、passport、phone、gate、liquid、power、warmer、plug、hat
+  5. 顏色和字體都在 <style> 最上面的 :root 變數；深色模式的顏色在它下面兩段。
+  6. 「出發前」那一頁的卡片是 <li class="info">，行李表格是 <table class="bag">。
+-->
+<style>
+/* 基本重設（頁籤切換靠 [hidden] 這一條，請保留） */
+:root{color-scheme:light}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>釜山三天兩夜行程</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap">
+<style>
+/* 版面：手繪筆記本。上方小插畫與標題，四個頁籤（出發前＋三天），每天是一條貼紙時間軸 */
+:root{
+  --paper:#FFFCF5; --grid:rgba(110,150,190,.17); --card:#FFFFFF; --ink:#4A3A30; --muted:#7D6C5F;
+  --accent:#CF5540; --hl:#FCE38A; --tape:#CFE6F5; --shadow:rgba(74,58,48,.14);
+  /* 貼紙插畫用色：兩種主題都固定，像貼在紙上的貼紙 */
+  --line:#4A3A30; --s-pink:#F9C4C0; --s-yellow:#FCE38A; --s-mint:#BFE5CF; --s-sky:#BFDFF3; --s-lav:#DCD0F2;
+  --s-red:#EE8572; --s-skin:#FADCC4; --s-white:#FFFFFF; --s-wave:#5FA9D0; --s-sea:#A9D8EE; --s-air:#E6F3FA;
+  --hand:"Iansui","LXGW WenKai TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --ko:"Gaegu","Iansui","Apple SD Gothic Neo","Noto Sans KR","Noto Sans TC",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#29231F; --grid:rgba(255,255,255,.055); --card:#3A312B; --ink:#F5EADB; --muted:#C6B6A6;
+  --accent:#F49B88; --hl:rgba(252,227,138,.30); --tape:#3B5567; --shadow:rgba(0,0,0,.38); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --paper:#29231F; --grid:rgba(255,255,255,.055); --card:#3A312B; --ink:#F5EADB; --muted:#C6B6A6;
+  --accent:#F49B88; --hl:rgba(252,227,138,.30); --tape:#3B5567; --shadow:rgba(0,0,0,.38); color-scheme:dark }
+
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:var(--hand);font-size:18px;line-height:1.6;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px}
+.wrap{max-width:560px;margin:0 auto;padding-block:18px 48px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:flex;flex-direction:column;gap:18px}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-weight:700;line-height:1.3;text-wrap:balance}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
+
+/* 插畫共用 */
+.blob{fill:var(--b,var(--s-yellow))}
+.st{stroke:var(--line);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ln{fill:none;stroke:var(--line);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.wv{stroke:var(--s-wave)}
+.fw{fill:var(--s-white)} .fp{fill:var(--s-pink)} .fy{fill:var(--s-yellow)} .fm{fill:var(--s-mint)} .fs{fill:var(--s-sky)}
+.fl{fill:var(--s-lav)} .fr{fill:var(--s-red)} .fn{fill:var(--s-skin)} .fk{fill:var(--line)} .fa{fill:var(--s-air)} .fe{fill:var(--s-sea)}
+.bl{fill:var(--s-red);opacity:.5}
+
+/* 標題區 */
+.hero{display:flex;flex-direction:column;gap:6px}
+.scene{width:100%;height:auto;display:block}
+.kr{font-family:var(--ko);color:var(--accent);font-size:20px;transform:rotate(-3deg);display:inline-block}
+.hero h1{font-size:34px}
+.hero .sub{color:var(--muted);font-size:16.5px}
+.hl{background:linear-gradient(transparent 58%,var(--hl) 58%);padding:0 4px}
+#tabs-top{height:0;margin-bottom:-18px}
+
+/* 頁籤 */
+.tabs{position:sticky;top:env(safe-area-inset-top, 0px);z-index:5;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;
+  background:var(--paper);padding-block:8px;margin-block:-4px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--paper)}
+.tabs a{min-width:0;text-align:center;text-decoration:none;color:var(--ink);background:var(--card);
+  border:2px solid var(--ink);border-radius:14px 18px 13px 19px / 18px 13px 19px 14px;padding:6px 2px 5px;font-size:17px;font-weight:700;line-height:1.25;
+  box-shadow:2px 3px 0 var(--shadow)}
+.tabs a small{display:block;font-family:var(--ko);font-weight:400;font-size:14px;color:var(--muted)}
+.tabs a[aria-current="page"]{background:var(--s-yellow);color:var(--line);transform:rotate(-2deg) translateY(-1px)}
+.tabs a[aria-current="page"] small{color:var(--line)}
+
+/* 每一頁 */
+.panel{display:flex;flex-direction:column;gap:14px;scroll-margin-top:90px}
+.phead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.phead h2{font-size:28px}
+.phead .date{color:var(--accent);font-size:18px}
+.sum{color:var(--muted);font-size:17px}
+.hint,.src{color:var(--muted);font-size:14.5px}
+.src a{color:var(--muted)}
+
+/* 時間軸 */
+ol,ul{list-style:none;margin:0;padding:0}
+.tl{display:flex;flex-direction:column;gap:12px}
+.stop{display:grid;grid-template-columns:60px 1fr;gap:8px;align-items:start}
+.time{padding-top:13px}
+.time span{display:inline-block;font-family:var(--ko);font-weight:700;font-size:19px;line-height:1.2;background:var(--tape);
+  padding:2px 6px;border-radius:3px 6px 4px 7px;transform:rotate(-4deg);font-variant-numeric:tabular-nums}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:20px 26px 18px 28px / 26px 18px 28px 20px;
+  box-shadow:3px 4px 0 var(--shadow);padding:11px 10px 11px 14px;display:grid;grid-template-columns:1fr 66px;gap:8px;align-items:center;min-width:0}
+.stop:nth-child(odd) .card{transform:rotate(-.35deg)} .stop:nth-child(even) .card{transform:rotate(.35deg)}
+.txt{min-width:0;display:flex;flex-direction:column;gap:2px}
+.card h3{font-size:20px}
+.shop{display:flex;gap:4px;align-items:flex-start;font-size:17px;line-height:1.45}
+.shop span{border-bottom:2px dotted var(--accent)}
+.pin{width:16px;height:16px;flex:none;margin-top:5px}
+.pin path{fill:var(--s-red);stroke:var(--line);stroke-width:1.2} .pin circle{fill:var(--s-white)}
+.desc{color:var(--muted);font-size:16px;line-height:1.5}
+.ico{display:flex;flex-direction:column;align-items:center;gap:0;text-decoration:none;justify-self:center}
+.ico svg{width:60px;height:60px;display:block}
+.stop:nth-child(odd) .ico svg{transform:rotate(4deg)} .stop:nth-child(even) .ico svg{transform:rotate(-4deg)}
+.ico span{font-size:13.5px;line-height:1.2;color:var(--accent);border-bottom:2px solid var(--accent);padding:0 1px}
+a.ico:active svg{transform:scale(.93)}
+.note{font-size:15.5px;line-height:1.5;color:var(--ink);border:2px dashed var(--accent);border-radius:9px 12px 8px 13px;padding:4px 8px;margin-top:5px}
+.note b{color:var(--accent);margin-right:6px}
+.tag{align-self:flex-start;font-size:13.5px;line-height:1.3;padding:1px 9px;border-radius:999px;background:var(--s-yellow);color:var(--line);margin-bottom:2px}
+.tag.stamp{background:transparent;color:var(--accent);border:2px solid var(--accent);border-radius:7px 9px 6px 10px;transform:rotate(-5deg);font-weight:700}
+.stop.move .time{padding-top:1px;font-family:var(--ko);font-size:16px;color:var(--muted);padding-left:6px}
+.go{color:var(--muted);font-size:16px;border-left:3px dotted var(--muted);padding-left:10px;margin-left:8px}
+
+/* 出發前 */
+.sec{display:flex;flex-direction:column;gap:10px}
+.sh{font-size:22px;margin-top:6px}
+.sh::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50% 45% 55% 48%;background:var(--s-red);border:2px solid var(--ink);margin-right:8px}
+.ticket{background:var(--card);border:2px dashed var(--ink);border-radius:16px 20px 15px 21px / 20px 15px 21px 16px;padding:12px 16px;
+  display:grid;grid-template-columns:1fr auto 1fr;gap:4px 10px;align-items:center}
+.ticket .lab{grid-column:1/-1;font-size:15px;color:var(--muted)}
+.ticket .t{font-family:var(--ko);font-size:30px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.ticket .p{font-size:15px;color:var(--muted)}
+.ticket .arrow{color:var(--accent);font-size:24px}
+.ticket .r{text-align:right}
+.infos{display:flex;flex-direction:column;gap:10px}
+.info{background:var(--card);border:2px solid var(--ink);border-radius:20px 26px 18px 28px / 26px 18px 28px 20px;box-shadow:3px 4px 0 var(--shadow);
+  padding:11px 14px 11px 10px;display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:start}
+.info svg{width:54px;height:54px;display:block;transform:rotate(-4deg)}
+.info:nth-child(even) svg{transform:rotate(4deg)}
+.info h3{font-size:19px}
+.info p{font-size:16.5px;color:var(--muted);line-height:1.55}
+.info div{min-width:0}
+.num{display:inline-grid;place-items:center;width:26px;height:26px;margin-right:7px;border:2px solid var(--ink);border-radius:50% 46% 52% 48%;
+  background:var(--s-yellow);color:var(--line);font-family:var(--ko);font-size:17px;line-height:1;vertical-align:2px}
+.ban{display:flex;flex-direction:column;gap:6px;background:var(--card);border:2px solid var(--ink);border-radius:20px 26px 18px 28px / 26px 18px 28px 20px;
+  box-shadow:3px 4px 0 var(--shadow);padding:12px 14px}
+.ban li{display:grid;grid-template-columns:24px 1fr;gap:6px;font-size:17px}
+.x{color:var(--accent);font-weight:700}
+.plain{font-size:16.5px;color:var(--muted)}
+.bagbox{background:var(--card);border:2px solid var(--ink);border-radius:20px 26px 18px 28px / 26px 18px 28px 20px;box-shadow:3px 4px 0 var(--shadow);
+  padding:13px 14px;display:flex;flex-direction:column;gap:8px}
+.bagbox h3{font-size:18.5px}
+.bagbox p{font-size:16.5px;color:var(--muted)}
+.bag{width:100%;border-collapse:collapse;font-size:17px}
+.bag th,.bag td{text-align:left;padding:6px 4px;border-bottom:2px dotted var(--muted);font-weight:400}
+.bag td{font-weight:700;text-align:right;white-space:nowrap}
+.dots{display:flex;flex-direction:column;gap:3px;font-size:16px;color:var(--muted);padding-left:1.1em;list-style:disc}
+.memo{border:2px dashed var(--accent);border-radius:10px 13px 9px 14px;padding:6px 10px;color:var(--ink) !important}
+@media (prefers-reduced-motion:reduce){ .card,.ico svg,.info svg,.tabs a[aria-current="page"],.time span,.tag.stamp,.kr{transform:none !important} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.8" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <symbol id="i-plane" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><g transform="rotate(-16 32 32)"><path class="fs st" d="M27 27l-5-13h6l9 13zM27 37l-5 13h6l9-13z"/><rect class="fw st" x="9" y="25" width="46" height="14" rx="7"/><path class="fp st" d="M12 26l-4-9h6l5 8z"/><circle class="fk" cx="40" cy="30.5" r="1.6"/><circle class="fk" cx="48" cy="30.5" r="1.6"/><path class="ln" d="M42 33.5q2 2.6 4 0"/><circle class="bl" cx="36.8" cy="33.5" r="2.4"/><circle class="bl" cx="51.2" cy="33.5" r="2.4"/></g></g></symbol>
+    <symbol id="i-taxi" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="fy st" d="M17 31l5-10h20l5 10z"/><rect class="fy st" x="9" y="31" width="46" height="14" rx="6"/><path class="fw st" d="M24 30l3-6h10l3 6z"/><rect class="fr st" x="27" y="14" width="10" height="7" rx="2"/><circle class="fk" cx="20" cy="46" r="5"/><circle class="fk" cx="44" cy="46" r="5"/><circle class="fw" cx="20" cy="46" r="1.8"/><circle class="fw" cx="44" cy="46" r="1.8"/><circle class="fk" cx="28" cy="36" r="1.6"/><circle class="fk" cx="36" cy="36" r="1.6"/><path class="ln" d="M30 39q2 2.6 4 0"/><circle class="bl" cx="24.8" cy="39" r="2.4"/><circle class="bl" cx="39.2" cy="39" r="2.4"/></g></symbol>
+    <symbol id="i-spa" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln wv" d="M26 11c-2-3 2-4 0-7M38 11c-2-3 2-4 0-7"/><circle class="fw st" cx="16" cy="27" r="8"/><circle class="fw st" cx="48" cy="27" r="8"/><path class="ln" d="M13 27a3 3 0 106 0M45 27a3 3 0 106 0"/><path class="fw st" d="M15 31c0-14 34-14 34 0z"/><circle class="fn st" cx="32" cy="40" r="15"/><circle class="fk" cx="26.5" cy="39" r="1.6"/><circle class="fk" cx="37.5" cy="39" r="1.6"/><path class="ln" d="M29.25 42q2.75 2.6 5.5 0"/><circle class="bl" cx="22.1" cy="42" r="2.4"/><circle class="bl" cx="41.9" cy="42" r="2.4"/></g></symbol>
+    <symbol id="i-soup" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln wv" d="M24 22c-3-4 3-6 0-10M32 21c-3-4 3-6 0-10M40 22c-3-4 3-6 0-10"/><path class="fw st" d="M11 31h42c0 13-9 20-21 20S11 44 11 31z"/><ellipse class="fy st" cx="32" cy="31" rx="21" ry="5"/><circle class="fk" cx="27" cy="40" r="1.6"/><circle class="fk" cx="37" cy="40" r="1.6"/><path class="ln" d="M29.5 43q2.5 2.6 5 0"/><circle class="bl" cx="23" cy="43" r="2.4"/><circle class="bl" cx="41" cy="43" r="2.4"/></g></symbol>
+    <symbol id="i-bed" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><rect class="fs st" x="10" y="34" width="44" height="12" rx="4"/><rect class="fw st" x="13" y="26" width="16" height="11" rx="4"/><path class="ln" d="M12 46v6M52 46v6"/><path class="ln" d="M16 32q2 2 4 0M22 32q2 2 4 0"/><path class="ln" d="M36 13h8l-8 9h8M48 22h5l-5 6h5"/></g></symbol>
+    <symbol id="i-bag" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln" d="M24 27v-6a8 8 0 0116 0v6"/><path class="fp st" d="M16 25h32l3 26H13z"/><circle class="fk" cx="27" cy="36" r="1.6"/><circle class="fk" cx="37" cy="36" r="1.6"/><path class="ln" d="M29.5 39q2.5 2.6 5 0"/><circle class="bl" cx="23" cy="39" r="2.4"/><circle class="bl" cx="41" cy="39" r="2.4"/></g></symbol>
+    <symbol id="i-grill" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln wv" d="M25 12c-2-3 2-4 0-7M39 12c-2-3 2-4 0-7"/><circle class="fw st" cx="32" cy="35" r="20"/><circle class="fy st" cx="32" cy="35" r="15"/><rect class="fr st" x="21" y="27" width="12" height="7" rx="3.5"/><rect class="fr st" x="31" y="37" width="12" height="7" rx="3.5"/><rect class="fr st" x="35" y="26" width="8" height="6" rx="3"/><rect class="fm st" x="21" y="38" width="7" height="6" rx="3"/></g></symbol>
+    <symbol id="i-pork" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln wv" d="M25 12c-2-3 2-4 0-7M39 12c-2-3 2-4 0-7"/><circle class="fw st" cx="32" cy="35" r="20"/><circle class="fy st" cx="32" cy="35" r="15"/><rect class="fp st" x="21" y="27" width="12" height="7" rx="3.5"/><rect class="fp st" x="31" y="37" width="12" height="7" rx="3.5"/><rect class="fp st" x="35" y="26" width="8" height="6" rx="3"/><rect class="fm st" x="21" y="38" width="7" height="6" rx="3"/></g></symbol>
+    <symbol id="i-cart" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln" d="M8 17h8l5 23h25l4-16H19"/><rect class="fy st" x="23" y="26" width="8" height="12" rx="2"/><rect class="fp st" x="33" y="22" width="8" height="16" rx="2"/><circle class="fk" cx="25" cy="48" r="3.5"/><circle class="fk" cx="44" cy="48" r="3.5"/></g></symbol>
+    <symbol id="i-chicken" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><circle class="fw st" cx="14" cy="47" r="3.6"/><circle class="fw st" cx="18" cy="51" r="3.6"/><path class="fy st" d="M22 13c13-4 25 7 20 20-2.5 7-9 10-15 9l-6 6-5-5 6-6c-4-7-5-19 0-24z"/><circle class="fk" cx="26.5" cy="25" r="1.6"/><circle class="fk" cx="35.5" cy="25" r="1.6"/><path class="ln" d="M28.75 28q2.25 2.6 4.5 0"/><circle class="bl" cx="22.9" cy="28" r="2.4"/><circle class="bl" cx="39.1" cy="28" r="2.4"/></g></symbol>
+    <symbol id="i-cable" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln" d="M5 17l54-8"/><path class="ln" d="M32 13v8"/><rect class="fp st" x="18" y="21" width="28" height="22" rx="8"/><rect class="fw st" x="22" y="25" width="9" height="8" rx="2.5"/><rect class="fw st" x="33" y="25" width="9" height="8" rx="2.5"/><path class="ln" d="M29 37q3 2.5 6 0"/><path class="ln wv" d="M10 53c4-3 7 3 11 0s7 3 11 0 7 3 11 0 7 3 11 0"/></g></symbol>
+    <symbol id="i-walk" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><circle class="fy st" cx="45" cy="18" r="8"/><path class="ln" d="M8 33h36M14 33v11M26 33v11M38 33v11"/><path class="ln wv" d="M8 47c5-4 9 4 14 0s9 4 14 0 9 4 14 0 5 2 7 0M10 55c5-4 9 4 14 0s9 4 14 0 9 4 12 1"/></g></symbol>
+    <symbol id="i-fish" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="fs st" d="M42 32l13-10v20z"/><path class="fs st" d="M9 32c8-15 28-15 36 0-8 15-28 15-36 0z"/><circle class="fw st" cx="20" cy="29" r="3.5"/><circle class="fk" cx="20.5" cy="29" r="1.4"/><path class="ln" d="M15 36q3 2 6 0"/><path class="ln" d="M31 25c3 4 3 10 0 14"/><circle class="bl" cx="25" cy="35" r="2.3"/></g></symbol>
+    <symbol id="i-mochi" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="fw st" d="M11 42c0-14 9-23 21-23s21 9 21 23c0 4-3 7-8 7H19c-5 0-8-3-8-7z"/><path class="fr st" d="M26 19c0-6 12-6 12 0 0 5-3 8-6 8s-6-3-6-8z"/><path class="fm st" d="M32 13c1-4 5-5 8-4-1 4-4 5-8 4z"/><circle class="fk" cx="26.5" cy="37" r="1.6"/><circle class="fk" cx="37.5" cy="37" r="1.6"/><path class="ln" d="M29.25 40q2.75 2.6 5.5 0"/><circle class="bl" cx="22.1" cy="40" r="2.4"/><circle class="bl" cx="41.9" cy="40" r="2.4"/></g></symbol>
+    <symbol id="i-bread" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="fy st" d="M9 39c0-13 10-20 23-20s23 7 23 20c0 5-4 8-9 8H18c-5 0-9-3-9-8z"/><path class="ln" d="M21 23l-2 7M32 21v7M43 23l2 7"/><circle class="fk" cx="26.5" cy="37" r="1.6"/><circle class="fk" cx="37.5" cy="37" r="1.6"/><path class="ln" d="M29.25 40q2.75 2.6 5.5 0"/><circle class="bl" cx="22.1" cy="40" r="2.4"/><circle class="bl" cx="41.9" cy="40" r="2.4"/></g></symbol>
+    <symbol id="i-saltbread" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="fy st" d="M8 40c2-12 12-20 24-20s22 8 24 20c1 5-3 8-8 7-5-1-9-3-16-3s-11 2-16 3c-5 1-9-2-8-7z"/><path class="ln" d="M21 24c-1 5-1 11 1 18M43 24c1 5 1 11-1 18"/><circle class="fw" cx="28" cy="26" r="1.4"/><circle class="fw" cx="36" cy="25" r="1.4"/><circle class="fw" cx="32" cy="29" r="1.4"/><circle class="fk" cx="27.5" cy="36" r="1.6"/><circle class="fk" cx="36.5" cy="36" r="1.6"/><path class="ln" d="M29.75 39q2.25 2.6 4.5 0"/><circle class="bl" cx="23.9" cy="39" r="2.4"/><circle class="bl" cx="40.1" cy="39" r="2.4"/></g></symbol>
+    <symbol id="i-bridge" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><circle class="fy st" cx="48" cy="14" r="6"/><path class="ln" d="M4 39c8-2 13-10 17-20 4 13 18 13 22 0 4 10 9 18 17 20"/><rect class="fr st" x="19" y="17" width="4" height="27" rx="1"/><rect class="fr st" x="41" y="17" width="4" height="27" rx="1"/><rect class="fw st" x="5" y="38" width="54" height="5" rx="2"/><path class="ln wv" d="M10 52c4-3 7 3 11 0s7 3 11 0 7 3 11 0 7 3 11 0"/></g></symbol>
+    <symbol id="i-tower" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="fm st" d="M6 54c5-9 13-10 20-5 6-6 15-6 21 0 4-3 9-2 11 5z"/><path class="fw st" d="M28 24h8l3 28H25z"/><path class="ln" d="M27 34h10M26 43h12"/><rect class="fr st" x="23" y="15" width="18" height="10" rx="4"/><circle class="fk" cx="29" cy="19.5" r="1.4"/><circle class="fk" cx="35" cy="19.5" r="1.4"/><path class="ln" d="M32 15V7"/><circle class="fy st" cx="32" cy="6" r="2.2"/></g></symbol>
+    <symbol id="i-beauty" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><rect class="fp st" x="14" y="30" width="14" height="21" rx="4"/><rect class="fw st" x="17" y="22" width="8" height="8" rx="2"/><rect class="fm st" x="35" y="26" width="15" height="25" rx="5"/><rect class="fw st" x="39" y="17" width="7" height="9" rx="2"/><path class="ln" d="M19 40q2 2 4 0M40 39q2.5 2.5 5 0"/><path class="fy st" d="M30 9l1.6 3.4 3.4 1.6-3.4 1.6L30 19l-1.6-3.4L25 14l3.4-1.6z"/></g></symbol>
+    <symbol id="i-rib" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln wv" d="M26 17c-2-3 2-4 0-7M38 17c-2-3 2-4 0-7"/><path class="fw st" d="M11 32h42c0 12-8 19-21 19S11 44 11 32z"/><ellipse class="fr st" cx="32" cy="31" rx="21" ry="5.5"/><rect class="fw st" x="22" y="24" width="6" height="9" rx="3"/><rect class="fw st" x="36" y="24" width="6" height="9" rx="3"/><circle class="fk" cx="27" cy="41" r="1.6"/><circle class="fk" cx="37" cy="41" r="1.6"/><path class="ln" d="M29.5 44q2.5 2.6 5 0"/><circle class="bl" cx="23" cy="44" r="2.4"/><circle class="bl" cx="41" cy="44" r="2.4"/></g></symbol>
+    <symbol id="i-capsule" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln" d="M4 45h56M15 45v11M49 45v11"/><rect class="fy st" x="14" y="19" width="36" height="25" rx="11"/><rect class="fw st" x="19" y="24" width="11" height="9" rx="3"/><rect class="fw st" x="34" y="24" width="11" height="9" rx="3"/><path class="ln" d="M29 37q3 2.5 6 0"/><circle class="bl" cx="23" cy="38" r="2.3"/><circle class="bl" cx="41" cy="38" r="2.3"/></g></symbol>
+    <symbol id="i-luggage" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln" d="M25 21v-8h14v8"/><rect class="fs st" x="16" y="21" width="32" height="29" rx="6"/><circle class="fk" cx="23" cy="53" r="2.5"/><circle class="fk" cx="41" cy="53" r="2.5"/><circle class="fk" cx="27" cy="33" r="1.6"/><circle class="fk" cx="37" cy="33" r="1.6"/><path class="ln" d="M29.5 36q2.5 2.6 5 0"/><circle class="bl" cx="23" cy="36" r="2.4"/><circle class="bl" cx="41" cy="36" r="2.4"/></g></symbol>
+    <symbol id="i-porridge" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln wv" d="M26 20c-2-3 2-4 0-7M38 20c-2-3 2-4 0-7"/><path class="fw st" d="M11 31h42c0 13-9 20-21 20S11 44 11 31z"/><ellipse class="fy st" cx="32" cy="31" rx="21" ry="5.5"/><ellipse class="fm st" cx="32" cy="30" rx="6" ry="2.5"/><circle class="fk" cx="27" cy="41" r="1.6"/><circle class="fk" cx="37" cy="41" r="1.6"/><path class="ln" d="M29.5 44q2.5 2.6 5 0"/><circle class="bl" cx="23" cy="44" r="2.4"/><circle class="bl" cx="41" cy="44" r="2.4"/></g></symbol>
+    <symbol id="i-tteok" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="fr st" d="M50 8c2 3 4 4 4 7a4 4 0 01-8 0c0-2 2-3 2-5z"/><path class="fw st" d="M10 33h44c0 12-9 18-22 18S10 45 10 33z"/><ellipse class="fr st" cx="32" cy="32" rx="22" ry="6.5"/><rect class="fw st" x="18" y="28" width="13" height="5.5" rx="2.7"/><rect class="fw st" x="34" y="30" width="13" height="5.5" rx="2.7"/><rect class="fw st" x="26" y="24" width="13" height="5.5" rx="2.7"/><circle class="fk" cx="27" cy="43" r="1.6"/><circle class="fk" cx="37" cy="43" r="1.6"/><path class="ln" d="M29.5 46q2.5 2.6 5 0"/><circle class="bl" cx="23" cy="46" r="2.4"/><circle class="bl" cx="41" cy="46" r="2.4"/></g></symbol>
+    <symbol id="i-passport" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><rect class="fm st" x="17" y="10" width="30" height="44" rx="4"/><circle class="fw st" cx="32" cy="27" r="8"/><path class="ln" d="M24 27h16M32 19c-4 4-4 12 0 16M32 19c4 4 4 12 0 16"/><path class="ln" d="M24 44h16"/></g></symbol>
+    <symbol id="i-phone" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><rect class="fw st" x="19" y="8" width="26" height="48" rx="5"/><path class="ln" d="M28 13h8"/><rect class="fs st" x="23" y="18" width="18" height="24" rx="2"/><path class="ln" d="M27 30l4 4 7-8"/><circle class="fk" cx="32" cy="49" r="1.8"/></g></symbol>
+    <symbol id="i-gate" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><rect class="fw st" x="12" y="13" width="40" height="31" rx="4"/><path class="ln" d="M25 36c-2-7 1-15 7-15s9 8 7 15M29.5 37c-1-5 0-10 2.5-10s3.5 5 2.5 10"/><path class="ln" d="M22 51h20M32 44v7"/></g></symbol>
+    <symbol id="i-liquid" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="fw st" d="M12 16h40v34a4 4 0 01-4 4H16a4 4 0 01-4-4z"/><path class="ln" d="M12 23h40"/><rect class="fr st" x="45" y="12" width="9" height="7" rx="2"/><rect class="fp st" x="19" y="33" width="9" height="15" rx="3"/><rect class="fp st" x="21" y="28" width="5" height="5" rx="1"/><rect class="fm st" x="35" y="35" width="10" height="13" rx="3"/><rect class="fm st" x="37.5" y="30" width="5" height="5" rx="1"/></g></symbol>
+    <symbol id="i-power" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><rect class="fs st" x="18" y="10" width="28" height="44" rx="6"/><path class="fy st" d="M35 17l-9 15h6l-3 14 10-17h-6z"/></g></symbol>
+    <symbol id="i-warmer" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><rect class="fy st" x="16" y="13" width="32" height="39" rx="5"/><path class="fr st" d="M32 22c4 5 7 7 7 12a7 7 0 01-14 0c0-4 3-5 4-9 1 2 2 3 3 3z"/></g></symbol>
+    <symbol id="i-plug" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><path class="ln" d="M26 22V11M38 22V11"/><rect class="fw st" x="18" y="22" width="28" height="26" rx="8"/><circle class="fk" cx="27.5" cy="33" r="1.6"/><circle class="fk" cx="36.5" cy="33" r="1.6"/><path class="ln" d="M29.75 36q2.25 2.6 4.5 0"/><circle class="bl" cx="23.9" cy="36" r="2.4"/><circle class="bl" cx="40.1" cy="36" r="2.4"/><path class="ln" d="M32 48v7"/></g></symbol>
+    <symbol id="i-hat" viewBox="0 0 64 64"><path class="blob" d="M33 3c15 0 27 11 28 27 1 17-11 30-28 31C16 62 4 50 3 34 2 17 16 3 33 3z"/><g filter="url(#rough)"><circle class="fw st" cx="32" cy="13" r="5"/><path class="fr st" d="M14 41c0-14 8-23 18-23s18 9 18 23z"/><rect class="fw st" x="11" y="39" width="42" height="11" rx="5.5"/><path class="ln" d="M20 39v11M28 39v11M36 39v11M44 39v11"/></g></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="hero">
+    <svg class="scene" viewBox="0 0 560 200" role="img" aria-label="手繪插畫：海邊的膠囊列車、海鷗和大橋">
+      <g filter="url(#rough)">
+      <path class="fa st" d="M12 14c170-8 370-8 536 0 5 56 5 116 0 172-166 8-366 8-536 0-5-56-5-116 0-172z"/>
+      <circle class="fy st" cx="468" cy="52" r="24"/>
+      <circle class="fk" cx="460" cy="50" r="2"/><circle class="fk" cx="476" cy="50" r="2"/><path class="ln" d="M463 57q5 4 10 0"/><circle class="bl" cx="453" cy="56" r="3.5"/><circle class="bl" cx="483" cy="56" r="3.5"/>
+      <path class="ln" d="M468 20v-6M494 30l5-4M502 52h6M440 30l-5-4"/>
+      <path class="fw st" d="M70 60c0-12 20-14 24-3 11-5 22 6 13 13H68c-9-1-8-10 2-10z"/>
+      <path class="fw st" d="M262 44c0-9 15-10 18-2 8-4 16 4 10 9h-30c-6-1-5-7 2-7z"/>
+      <path class="ln" d="M180 48q7-8 12 0q5-8 12 0M330 70q6-7 10 0q4-7 10 0"/>
+      <path class="ln" d="M262 136c34-6 58-30 74-64 20 42 72 42 92 0 16 34 46 58 118 64"/>
+      <rect class="fr st" x="332" y="70" width="8" height="78" rx="2"/><rect class="fr st" x="424" y="70" width="8" height="78" rx="2"/>
+      <rect class="fw st" x="258" y="134" width="290" height="8" rx="3"/>
+      <path class="fe st" d="M14 152c20-6 34 6 54 0s34 6 54 0 34 6 54 0 34 6 54 0 34 6 54 0 34 6 54 0 34 6 54 0 34 6 54 0 34 6 54 0 22 3 46 1c2 12 2 22 0 33-166 8-366 8-536 0-2-11-2-22 0-34z"/>
+      <path class="ln" style="stroke:var(--s-white)" d="M40 170c8-5 14 5 22 0s14 5 22 0M300 174c8-5 14 5 22 0s14 5 22 0M440 168c8-5 14 5 22 0s14 5 22 0"/>
+      <path class="ln" d="M14 124h236"/><path class="ln" d="M46 124v30M156 124v30"/>
+      <rect class="fy st" x="24" y="80" width="60" height="43" rx="19"/><rect class="fw st" x="33" y="88" width="18" height="15" rx="5"/><rect class="fw st" x="56" y="88" width="18" height="15" rx="5"/><path class="ln" d="M49 111q5 4 10 0"/><circle class="bl" cx="40" cy="111" r="3.5"/><circle class="bl" cx="68" cy="111" r="3.5"/>
+      <rect class="fp st" x="98" y="80" width="60" height="43" rx="19"/><rect class="fw st" x="107" y="88" width="18" height="15" rx="5"/><rect class="fw st" x="130" y="88" width="18" height="15" rx="5"/><path class="ln" d="M123 111q5 4 10 0"/><circle class="bl" cx="114" cy="111" r="3.5"/><circle class="bl" cx="142" cy="111" r="3.5"/>
+      <rect class="fm st" x="172" y="80" width="60" height="43" rx="19"/><rect class="fw st" x="181" y="88" width="18" height="15" rx="5"/><rect class="fw st" x="204" y="88" width="18" height="15" rx="5"/><path class="ln" d="M197 111q5 4 10 0"/><circle class="bl" cx="188" cy="111" r="3.5"/><circle class="bl" cx="216" cy="111" r="3.5"/>
+      <path class="fr st" d="M222 40c-4-6-13-1-8 6l8 8 8-8c5-7-4-12-8-6z"/>
+      </g>
+    </svg>
+    <span class="kr" lang="ko" aria-hidden="true">부산 가족여행 ♡</span>
+    <h1><span class="hl">釜山三天兩夜</span></h1>
+    <p class="sub">2026 年 11 月 28 日（六）到 30 日（一）・住南浦洞，札嘎其站旁邊</p>
+  </header>
+
+  <div id="tabs-top"></div>
+  <nav class="tabs" aria-label="切換頁面">
+    <a href="#before">出發前<small>須知</small></a>
+    <a href="#day1">第一天<small>11/28 六</small></a>
+    <a href="#day2">第二天<small>11/29 日</small></a>
+    <a href="#day3">第三天<small>11/30 一</small></a>
+  </nav>
+
+  <section class="panel" id="before" aria-label="出發前">
+    <div class="phead"><h2><span class="hl">出發前要知道的事</span></h2><span class="kr" lang="ko" aria-hidden="true">출발 전</span></div>
+
+    <div class="sec">
+      <h2 class="sh">我們的班機</h2>
+      <div class="ticket">
+        <span class="lab">去程・11/28（六）・濟州航空</span>
+        <div><div class="t">02:50</div><div class="p">桃園機場</div></div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="r"><div class="t">06:10</div><div class="p">釜山金海機場</div></div>
+      </div>
+      <div class="ticket">
+        <span class="lab">回程・11/30（一）・濟州航空</span>
+        <div><div class="t">22:00</div><div class="p">釜山金海機場</div></div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="r"><div class="t">23:50</div><div class="p">桃園機場</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2 class="sh">入境韓國 4 個步驟</h2>
+      <ol class="infos">
+      <li class="info step"><svg viewBox="0 0 64 64" style="--b:var(--s-mint)" aria-hidden="true"><use href="#i-passport"/></svg><div><h3><span class="num">1</span>檢查護照</h3><p>效期要還有 6 個月以上。台灣護照免簽證，可以停留 90 天。</p></div></li>
+      <li class="info step"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-phone"/></svg><div><h3><span class="num">2</span>出發前 3 天內填「電子入境卡」</h3><p>2026 年起紙本入境卡取消了，要先上網填，完全免費。可以一個人幫全家一起填，填完把確認畫面存在手機。K-ETA 不用辦，台灣旅客到 2026 年底都免申請。</p></div></li>
+      <li class="info step"><svg viewBox="0 0 64 64" style="--b:var(--s-lav)" aria-hidden="true"><use href="#i-gate"/></svg><div><h3><span class="num">3</span>到釜山機場：入境審查</h3><p>第一次去韓國要走人工櫃檯，會請你按指紋。</p></div></li>
+      <li class="info step"><svg viewBox="0 0 64 64" style="--b:var(--s-yellow)" aria-hidden="true"><use href="#i-luggage"/></svg><div><h3><span class="num">4</span>領行李、過海關</h3><p>沒有要申報的東西就走綠色通道，不用填單子。</p></div></li>
+      </ol>
+    </div>
+
+    <div class="sec">
+      <h2 class="sh">不能帶進韓國的東西</h2>
+      <ul class="ban">
+      <li><span class="x" aria-hidden="true">✕</span><span>肉類和肉製品：肉鬆、肉乾、香腸都不行，加工過的也一樣</span></li>
+      <li><span class="x" aria-hidden="true">✕</span><span>新鮮水果、蔬菜、海鮮</span></li>
+      <li><span class="x" aria-hidden="true">✕</span><span>EVE 止痛藥：成分在韓國是管制藥品</span></li>
+      </ul>
+      <p class="plain">可以帶但有限量：酒 2 瓶（合計 2 公升以內）、香菸 1 條、現金超過 1 萬美金要申報。</p>
+    </div>
+
+    <div class="sec">
+      <h2 class="sh">手提行李的限制</h2>
+      <ul class="infos">
+      <li class="info"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-liquid"/></svg><div><h3>液體、乳液、牙膏</h3><p>每瓶 100 毫升以內，全部裝進一個 1 公升的透明夾鏈袋，每人一袋。</p></div></li>
+      <li class="info"><svg viewBox="0 0 64 64" style="--b:var(--s-yellow)" aria-hidden="true"><use href="#i-power"/></svg><div><h3>行動電源</h3><p>只能手提，不能托運。機身要有 Wh 標示，100Wh 以下、每人最多 5 顆。充電孔貼絕緣膠帶，每顆裝一個夾鏈袋。放在座位前方，不能放頭上的行李架。飛機上不能使用，也不能充電。</p></div></li>
+      <li class="info"><svg viewBox="0 0 64 64" style="--b:var(--s-pink)" aria-hidden="true"><use href="#i-warmer"/></svg><div><h3>暖暖包</h3><p>只能放手提行李，不能托運。</p></div></li>
+      <li class="info"><svg viewBox="0 0 64 64" style="--b:var(--s-mint)" aria-hidden="true"><use href="#i-beauty"/></svg><div><h3>回程特別注意</h3><p>在韓國買的化妝水、精華、泡菜、醬料，超過 100 毫升的都要放托運行李。刀子、剪刀也放托運。</p></div></li>
+      </ul>
+    </div>
+
+    <div class="sec">
+      <h2 class="sh">濟州航空行李限重</h2>
+      <div class="bagbox">
+        <h3>手提上飛機</h3>
+        <p>1 個登機箱（55×40×20 公分以內）加 1 個隨身小包，兩件合計 10 公斤。免稅店買的東西也算在裡面。</p>
+        <h3>托運行李，看買的票種</h3>
+        <table class="bag">
+        <tr><th scope="row">BASIC／FLY</th><td>沒有免費托運</td></tr>
+        <tr><th scope="row">STANDARD／FLYBAG</th><td>15 公斤</td></tr>
+        <tr><th scope="row">BIZ LITE</th><td>30 公斤</td></tr>
+        </table>
+        <ul class="dots">
+      <li>單件行李不能超過 32 公斤。</li>
+      <li>重量不能和同行的人合併計算。</li>
+      <li>要加買托運行李，先在濟州航空官網買，機場櫃檯比較貴。</li>
+        </ul>
+        <p class="memo">我們買的是哪一種票，確認後會更新在這裡。</p>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2 class="sh">行李準備</h2>
+      <ul class="infos">
+      <li class="info"><svg viewBox="0 0 64 64" style="--b:var(--s-lav)" aria-hidden="true"><use href="#i-plug"/></svg><div><h3>轉接頭</h3><p>韓國電壓 220V，插座是圓形兩孔，要帶轉接頭。</p></div></li>
+      <li class="info"><svg viewBox="0 0 64 64" style="--b:var(--s-pink)" aria-hidden="true"><use href="#i-spa"/></svg><div><h3>換洗衣物放隨身包</h3><p>第一天早上直接去汗蒸幕，換洗衣物和盥洗用品不要收進大行李。</p></div></li>
+      <li class="info"><svg viewBox="0 0 64 64" style="--b:var(--s-yellow)" aria-hidden="true"><use href="#i-hat"/></svg><div><h3>厚外套、帽子、圍巾</h3><p>十一月底的釜山比台灣冷，海邊風大。</p></div></li>
+      <li class="info"><svg viewBox="0 0 64 64" style="--b:var(--s-mint)" aria-hidden="true"><use href="#i-walk"/></svg><div><h3>好走的鞋</h3><p>每天都會走路。中間都有留休息時間，累了隨時說。</p></div></li>
+      </ul>
+    </div>
+
+    <p class="src">規定可能調整，出發前會再確認一次。資料來源：<a href="https://www.funliday.com/posts/2026-korea-entry/" target="_blank" rel="noopener">Funliday｜2026 韓國入境申請教學</a>、<a href="https://ggeng.blog/how-to-fill-korea-e-arrival-card/" target="_blank" rel="noopener">ggeng｜韓國電子入境卡怎麼填</a>、<a href="https://www.funliday.com/posts/?p=23836" target="_blank" rel="noopener">Funliday｜入境韓國食物與限制攜帶物品</a>、<a href="https://www.businesstoday.com.tw/article/category/183030/post/202601260029/" target="_blank" rel="noopener">今周刊｜韓國航空行動電源規定</a>、<a href="https://www.funliday.com/posts/korea-airline-powerbank-new-rules/" target="_blank" rel="noopener">Funliday｜2026 韓國搭機行動電源規定</a>、<a href="https://www.skyscanner.com.hk/destinations/advice/jeju-air-hand-luggage-rules-201802" target="_blank" rel="noopener">Skyscanner｜2026 濟州航空行李規定</a>、<a href="https://travel.yam.com/article/134020" target="_blank" rel="noopener">輕旅行｜廉價航空行李規範</a></p>
+  </section>
+
+  <section class="panel" id="day1" aria-label="第一天">
+    <div class="phead"><h2><span class="hl">第一天</span></h2><span class="date">11/28（六）</span><span class="kr" lang="ko" aria-hidden="true">첫째 날</span></div>
+    <p class="sum">半夜的飛機，所以一早先去汗蒸幕洗澡補眠，下午進飯店休息，傍晚逛街，晚上吃韓牛、逛超市。</p>
+    <ol class="tl">
+      <li class="stop"><div class="time"><span>06:10</span></div><div class="card"><div class="txt"><h3>抵達釜山</h3><p class="desc">濟州航空 02:50 從桃園起飛。出關、領行李。</p></div><span class="ico"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-plane"/></svg></span></div></li>
+      <li class="stop move"><div class="time">07:00</div><div class="go">叫車去松島，車程約 40 分鐘</div></li>
+      <li class="stop"><div class="time"><span>07:45</span></div><div class="card"><div class="txt"><h3>汗蒸幕洗澡、補眠</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>SPA HAESURANG（松島）</span></p><p class="desc">待到中午。換洗衣物放在隨身包。</p></div><a class="ico" href="https://feitravel.tw/busan-spa-haesurang-songdo-sea-view/" target="_blank" rel="noopener" aria-label="看「SPA HAESURANG（松島）」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-pink)" aria-hidden="true"><use href="#i-spa"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop move"><div class="time">12:30</div><div class="go">搭車回南浦洞，先放行李</div></li>
+      <li class="stop"><div class="time"><span>13:00</span></div><div class="card"><div class="txt"><h3>午餐：豬肉湯飯</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>密陽血腸豬肉湯飯 南浦店</span></p><p class="desc">釜山的招牌，熱熱的湯配白飯。</p></div><a class="ico" href="https://flyfishlife.tw/busan-miryang-sundae/" target="_blank" rel="noopener" aria-label="看「密陽血腸豬肉湯飯 南浦店」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-yellow)" aria-hidden="true"><use href="#i-soup"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>15:00</span></div><div class="card"><div class="txt"><h3>進飯店休息</h3><p class="desc">睡個午覺，補足精神。</p></div><span class="ico"><svg viewBox="0 0 64 64" style="--b:var(--s-lav)" aria-hidden="true"><use href="#i-bed"/></svg></span></div></li>
+      <li class="stop"><div class="time"><span>16:30</span></div><div class="card"><div class="txt"><h3>BIFF 廣場、光復路逛街</h3><p class="desc">飯店附近走走，吃有名的黑糖堅果餅。</p></div><a class="ico" href="https://www.funliday.com/posts/?p=122536" target="_blank" rel="noopener" aria-label="看「BIFF 廣場、光復路逛街」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-mint)" aria-hidden="true"><use href="#i-bag"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>17:00</span></div><div class="card"><div class="txt"><span class="tag ">想去再去</span><h3>龍頭山公園、釜山塔</h3><p class="desc">從光復路搭手扶梯上去，傍晚看釜山塔和市區風景。不想走就跳過，繼續逛街。</p></div><a class="ico" href="https://www.funliday.com/posts/?p=122536" target="_blank" rel="noopener" aria-label="看「龍頭山公園、釜山塔」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-lav)" aria-hidden="true"><use href="#i-tower"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>17:40</span></div><div class="card"><div class="txt"><h3>晚餐：韓牛烤肉</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>西面牛排骨肉 本店</span></p><p class="desc">搭地鐵到西面，約 20 分鐘。</p></div><a class="ico" href="https://www.instagram.com/p/DS144UFkgYS/" target="_blank" rel="noopener" aria-label="看「西面牛排骨肉 本店」的介紹貼文，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-pink)" aria-hidden="true"><use href="#i-grill"/></svg><span>看貼文</span></a></div></li>
+      <li class="stop"><div class="time"><span>20:00</span></div><div class="card"><div class="txt"><h3>逛超市</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>樂天超市 光復店</span></p><p class="desc">買零食、泡麵、海苔。帶護照可以退稅。</p></div><a class="ico" href="https://www.youtube.com/watch?v=6Jy4KkicOUg" target="_blank" rel="noopener" aria-label="看「樂天超市 光復店」的介紹影片，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-cart"/></svg><span>看影片</span></a></div></li>
+      <li class="stop"><div class="time"><span>21:15</span></div><div class="card"><div class="txt"><h3>宵夜：炸雞</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>橋村炸雞 南浦富平店</span></p><p class="desc">外帶回飯店吃，蜂蜜和醬油口味最有名。</p></div><a class="ico" href="https://bobbytravel.tw/kyochon-chicken/" target="_blank" rel="noopener" aria-label="看「橋村炸雞 南浦富平店」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-yellow)" aria-hidden="true"><use href="#i-chicken"/></svg><span>看介紹</span></a></div></li>
+    </ol>
+    <p class="hint">右邊小圖下面有畫線字的，點一下可以看別人寫的介紹文章、貼文或影片。</p>
+  </section>
+
+  <section class="panel" id="day2" aria-label="第二天">
+    <div class="phead"><h2><span class="hl">第二天</span></h2><span class="date">11/29（日）</span><span class="kr" lang="ko" aria-hidden="true">둘째 날</span></div>
+    <p class="sum">早上搭纜車看海，中午吃海鮮，下午到廣安里吃點心，晚上吃烤肉、看大橋夜景。</p>
+    <ol class="tl">
+      <li class="stop"><div class="time"><span>09:30</span></div><div class="card"><div class="txt"><h3>松島海上纜車</h3><p class="desc">從海面上空飛過去，再走龍宮雲橋。</p></div><a class="ico" href="https://bobbytravel.tw/busan-air-cruise/" target="_blank" rel="noopener" aria-label="看「松島海上纜車」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-cable"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>11:15</span></div><div class="card"><div class="txt"><span class="tag ">想去再去</span><h3>松島天空步道</h3><p class="desc">走在海上的步道，風大要戴帽子。要走很多路的話就跳過，直接去吃海鮮。</p></div><a class="ico" href="https://bobbytravel.tw/busan-air-cruise/" target="_blank" rel="noopener" aria-label="看「松島天空步道」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-mint)" aria-hidden="true"><use href="#i-walk"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>12:00</span></div><div class="card"><div class="txt"><h3>午餐：海鮮</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>新東亞水產物綜合市場</span></p><p class="desc">8號攤販。</p><p class="note"><b>備註</b>上午10點至中午為海鮮最新鮮、攤位最齊全的用餐黃金時段</p></div><a class="ico" href="https://www.funliday.com/posts/?p=145743" target="_blank" rel="noopener" aria-label="看「札嘎其市場」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-fish"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>13:15</span></div><div class="card"><div class="txt"><h3>回飯店休息</h3><p class="desc">買小吃回飯店，邊吃邊休息。</p><p class="note"><b>備註</b>不需要可刪，直接提早去廣安里</p></div><span class="ico"><svg viewBox="0 0 64 64" style="--b:var(--s-lav)" aria-hidden="true"><use href="#i-bed"/></svg></span></div></li>
+      <li class="stop move"><div class="time">14:45</div><div class="go">出發去廣安里，車程約 40 分鐘</div></li>
+      <li class="stop"><div class="time"><span>15:30</span></div><div class="card"><div class="txt"><h3>點心：水果大麻糬</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>金麻糬 廣安里本店</span></p><p class="desc">包著整顆水果的大麻糬，外帶邊走邊吃。</p></div><a class="ico" href="https://www.facebook.com/reel/4362149847430952" target="_blank" rel="noopener" aria-label="看「金麻糬 廣安里本店」的介紹影片，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-pink)" aria-hidden="true"><use href="#i-mochi"/></svg><span>看影片</span></a></div></li>
+      <li class="stop"><div class="time"><span>16:00</span></div><div class="card"><div class="txt"><h3>麵包和海邊咖啡</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>ANCIEN 麵包店</span></p><p class="desc">買法棍麵包，找間咖啡廳坐著看海。</p></div><a class="ico" href="https://www.instagram.com/p/DcsdaakE_IA/" target="_blank" rel="noopener" aria-label="看「ANCIEN 麵包店」的介紹貼文，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-yellow)" aria-hidden="true"><use href="#i-bread"/></svg><span>看貼文</span></a></div></li>
+      <li class="stop"><div class="time"><span>17:00</span></div><div class="card"><div class="txt"><h3>晚餐：熟成豬肉烤肉</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>熟成到 廣安里店</span></p><p class="desc">很紅的烤肉店，早點到比較不用排隊。</p><p class="note"><b>備註</b>還沒訂位或現場候位</p></div><a class="ico" href="https://mamahuhu.blog/overseas/sukseongdo-gwangalli/" target="_blank" rel="noopener" aria-label="看「熟成到 廣安里店」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-pink)" aria-hidden="true"><use href="#i-pork"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>18:45</span></div><div class="card"><div class="txt"><h3>廣安大橋夜景</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>廣安里海水浴場</span></p><p class="desc">吃飽在海邊散步，看大橋點燈。</p></div><a class="ico" href="https://kimiyo.tw/gwangalli/" target="_blank" rel="noopener" aria-label="看「廣安里海水浴場」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-lav)" aria-hidden="true"><use href="#i-bridge"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop move"><div class="time">19:45</div><div class="go">回南浦洞</div></li>
+      <li class="stop"><div class="time"><span>20:30</span></div><div class="card"><div class="txt"><span class="tag ">想吃再買</span><h3>宵夜：辣炒年糕</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>東大門獵奇辣炒年糕 光復店</span></p><p class="desc">外帶回飯店吃。</p><p class="note"><b>備註</b>晚上10點前點餐；很辣，可選最低辣度</p></div><span class="ico"><svg viewBox="0 0 64 64" style="--b:var(--s-yellow)" aria-hidden="true"><use href="#i-tteok"/></svg></span></div></li>
+    </ol>
+    <p class="hint">右邊小圖下面有畫線字的，點一下可以看別人寫的介紹文章、貼文或影片。</p>
+  </section>
+
+  <section class="panel" id="day3" aria-label="第三天">
+    <div class="phead"><h2><span class="hl">第三天</span></h2><span class="date">11/30（一）</span><span class="kr" lang="ko" aria-hidden="true">셋째 날</span></div>
+    <p class="sum">早上買保養品，然後帶著行李到海雲台寄放。中午吃牛肋排，下午搭膠囊列車看海、吃鹽麵包和鮑魚粥，傍晚從海雲台直接去機場。</p>
+    <ol class="tl">
+      <li class="stop"><div class="time"><span>09:30</span></div><div class="card"><div class="txt"><h3>退房，行李先寄放飯店</h3><p class="desc">先去買保養品，等一下再回來拿行李。</p></div><span class="ico"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-luggage"/></svg></span></div></li>
+      <li class="stop"><div class="time"><span>10:00</span></div><div class="card"><div class="txt"><h3>買保養品</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>Olive Young 南浦 Town 店</span></p><p class="desc">釜山最大的一間，這天開始年末折扣。11 點前要買完。</p></div><a class="ico" href="https://www.trvlogue.com/zh-Hant/busan-nampo-oliveyoung-opening" target="_blank" rel="noopener" aria-label="看「Olive Young 南浦 Town 店」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-mint)" aria-hidden="true"><use href="#i-beauty"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop move"><div class="time">11:00</div><div class="go">回飯店把買的東西裝箱，拿行李</div></li>
+      <li class="stop move"><div class="time">11:20</div><div class="go">帶著行李搭車去海雲台，車程約 50 分鐘</div></li>
+      <li class="stop"><div class="time"><span>12:10</span></div><div class="card"><div class="txt"><h3>寄放行李</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>海雲台站附近</span></p><p class="desc">把行李箱寄放好，下午輕鬆玩。</p></div><span class="ico"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-luggage"/></svg></span></div></li>
+      <li class="stop"><div class="time"><span>12:25</span></div><div class="card"><div class="txt"><h3>午餐：燉牛肋排</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>小香牛肋排（海雲台）</span></p><p class="desc">燉到軟嫩的牛肋排，很下飯。</p></div><a class="ico" href="https://damei17.com/sohyang-galbi-jjim/" target="_blank" rel="noopener" aria-label="看「小香牛肋排（海雲台）」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-pink)" aria-hidden="true"><use href="#i-rib"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop move"><div class="time">13:40</div><div class="go">搭車去青沙浦站</div></li>
+      <li class="stop"><div class="time"><span>14:30</span></div><div class="card"><div class="txt"><span class="tag stamp">已訂票</span><h3>天空膠囊列車</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>青沙浦站 → 尾浦站</span></p><p class="desc">我們三個人一台小車，沿著海邊慢慢開，約 30 分鐘。</p></div><a class="ico" href="https://creatrip.com/blog/8890" target="_blank" rel="noopener" aria-label="看「青沙浦站 → 尾浦站」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-capsule"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>15:30</span></div><div class="card"><div class="txt"><h3>買鹽麵包</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>自然島鹽麵包（尾浦站前）</span></p><p class="desc">下車就到。15:30 剛好有一爐出爐。</p></div><a class="ico" href="https://mtkorea.tw/saltbread-in-seaside-busan/" target="_blank" rel="noopener" aria-label="看「自然島鹽麵包（尾浦站前）」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-yellow)" aria-hidden="true"><use href="#i-saltbread"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>16:00</span></div><div class="card"><div class="txt"><h3>鮑魚粥</h3><p class="shop"><svg class="pin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 0 5 2.2 5 4.8 0 3.2-3.5 6.5-5 8.2-1.5-1.7-5-5-5-8.2 0-2.600 2-4.8 5-4.8z"/><circle cx="8" cy="6.3" r="1.7"/></svg><span>大海鮑魚粥 尾浦本店</span></p><p class="desc">就在麵包店同一條路上，上飛機前吃點暖的。</p></div><a class="ico" href="https://cetustar.com/busanfood/" target="_blank" rel="noopener" aria-label="看「大海鮑魚粥 尾浦本店」的介紹文章，會開新分頁"><svg viewBox="0 0 64 64" style="--b:var(--s-mint)" aria-hidden="true"><use href="#i-porridge"/></svg><span>看介紹</span></a></div></li>
+      <li class="stop"><div class="time"><span>16:45</span></div><div class="card"><div class="txt"><h3>海雲台海邊散步</h3><p class="desc">沿著沙灘從尾浦慢慢走回去拿行李，大約 20 分鐘。累了就搭計程車。</p></div><span class="ico"><svg viewBox="0 0 64 64" style="--b:var(--s-mint)" aria-hidden="true"><use href="#i-walk"/></svg></span></div></li>
+      <li class="stop move"><div class="time">17:20</div><div class="go">領行李</div></li>
+      <li class="stop"><div class="time"><span>17:30</span></div><div class="card"><div class="txt"><h3>出發去機場</h3><p class="desc">從海雲台直接搭車，傍晚會塞車，抓 1 小時多。預計 19:00 前到。</p></div><span class="ico"><svg viewBox="0 0 64 64" style="--b:var(--s-yellow)" aria-hidden="true"><use href="#i-taxi"/></svg></span></div></li>
+      <li class="stop"><div class="time"><span>22:00</span></div><div class="card"><div class="txt"><h3>飛回台灣</h3><p class="desc">濟州航空，23:50 抵達桃園。</p></div><span class="ico"><svg viewBox="0 0 64 64" style="--b:var(--s-sky)" aria-hidden="true"><use href="#i-plane"/></svg></span></div></li>
+    </ol>
+    <p class="hint">右邊小圖下面有畫線字的，點一下可以看別人寫的介紹文章、貼文或影片。</p>
+  </section>
+</div>
+<script>
+(function(){
+  var names=['before','day1','day2','day3'];
+  var tabs=[].slice.call(document.querySelectorAll('.tabs a'));
+  var panels=names.map(function(n){return document.getElementById(n)});
+  var mark=document.getElementById('tabs-top');
+  function show(name,jump){
+    if(names.indexOf(name)<0) name='before';
+    panels.forEach(function(p){p.hidden=(p.id!==name)});
+    tabs.forEach(function(a){
+      if(a.getAttribute('href')==='#'+name) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+    });
+    if(jump && mark){
+      var y=mark.getBoundingClientRect().top+window.pageYOffset;
+      if(window.pageYOffset>y) window.scrollTo(0,y);
+    }
+  }
+  tabs.forEach(function(a){a.addEventListener('click',function(e){
+    e.preventDefault();
+    var n=a.getAttribute('href').slice(1);
+    show(n,true);
+    try{ if(location.hash!=='#'+n) history.replaceState(null,'','#'+n); }catch(err){ location.hash=n; }
+  })});
+  window.addEventListener('hashchange',function(){show(location.hash.slice(1),true)});
+  show(location.hash.slice(1),false);
+})();
+</script>
+</body>
+</html>
